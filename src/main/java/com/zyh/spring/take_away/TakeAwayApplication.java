@@ -16,6 +16,7 @@ public class TakeAwayApplication {
         SpringApplication.run(TakeAwayApplication.class, args);
         log.info("take_away应用启动了");
         System.out.println("hello,git");
+        System.out.println("hello,git2");
     }
 
 }
