@@ -20,6 +20,7 @@ public class TakeAwayApplication {
         System.out.println("hello,git3");
         System.out.println("hello,git4");
         System.out.println(" master,hello conflict");
+        System.out.println("hot-fix conflict test hello");
     }
 
 }
