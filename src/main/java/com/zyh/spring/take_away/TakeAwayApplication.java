@@ -21,6 +21,7 @@ public class TakeAwayApplication {
         System.out.println("hello,git4");
         System.out.println(" master,hello conflict");
         System.out.println("hot-fix conflict test hello");
+        System.out.println("测试push");
     }
 
 }

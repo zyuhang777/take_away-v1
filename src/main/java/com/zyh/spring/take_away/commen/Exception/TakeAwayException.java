@@ -11,7 +11,5 @@ public class TakeAwayException extends RuntimeException{
 
     public TakeAwayException(String message) {
         super(message);
-        System.out.println("eee");
-        System.out.println("eeee");
     }
 }
