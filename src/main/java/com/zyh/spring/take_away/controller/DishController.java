@@ -16,10 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @ Author:张宇航是个大帅哥
@@ -36,6 +39,8 @@ public class DishController {
     private CategoryService categoryService;
     @Autowired
     private DishFlavorService dishFlavorService;
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
 
     @ApiOperation("菜品分页查询")
     @GetMapping("/page")
@@ -66,6 +71,7 @@ public class DishController {
     @PostMapping()
     public R<String> addDish(@RequestBody DishDto dishDto) {
         dishService.saveDishAndDishFlavor(dishDto);
+
 
         return R.success("添加成功");
     }
@@ -109,24 +115,8 @@ public class DishController {
      * 刚开始是使用的是List<Dish> 后来考虑到 移动端选规格或是选（选口味） 使用了Dto格式 DishDto
      */
     public R<List<DishDto>> getDishByCategory( Dish dish) {
-        Long id = dish.getCategoryId();
-        LambdaQueryWrapper<Dish> categoryLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        categoryLambdaQueryWrapper.eq(Dish::getCategoryId, id).eq(Dish::getStatus,1);
-        categoryLambdaQueryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
-        List<Dish> dishList = dishService.list(categoryLambdaQueryWrapper);
-        ArrayList<DishDto> dishDtoArrayList = new ArrayList<>();
-        for (Dish dish1 :dishList) {
-            DishDto dishDto = new DishDto();
-            BeanUtils.copyProperties(dish1,dishDto);
-            LambdaQueryWrapper<DishFlavor> dishFlavorLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            dishFlavorLambdaQueryWrapper.eq(DishFlavor::getDishId,dish1.getId());
-            List<DishFlavor> list = dishFlavorService.list(dishFlavorLambdaQueryWrapper);
-            dishDto.setFlavors(list);
-            dishDtoArrayList.add(dishDto);
-        }
-
+        List<DishDto> dishDtoArrayList = dishService.getListByCategoryId(dish);
         return R.success(dishDtoArrayList);
-
     }
 
 }

@@ -2,7 +2,6 @@ package com.zyh.spring.take_away.service.serviiceImp;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sun.org.apache.xpath.internal.operations.Or;
 import com.zyh.spring.take_away.commen.Exception.TakeAwayException;
 import com.zyh.spring.take_away.mapper.OrderMapper;
 import com.zyh.spring.take_away.pojo.AddressBook;

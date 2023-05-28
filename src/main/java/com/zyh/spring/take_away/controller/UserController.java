@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,14 +29,13 @@ import javax.servlet.http.HttpSession;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @ApiOperation("用户端发送验证码")
     @PostMapping("/sendMsg")
-    public R<String> sendMsg(@RequestBody User user,
-                             HttpServletRequest request) {
-        String code = userService.sendMsg(user);
-        HttpSession session = request.getSession();
-        session.setAttribute(user.getPhone(), code);
+    public R<String> sendMsg(@RequestBody User user) {
+        userService.sendMsg(user);
         return R.success("手机验证码发送成功");
     }
 
@@ -44,8 +44,9 @@ public class UserController {
     public R<User> login(@RequestBody User user, HttpServletRequest request) {
         String phone = user.getPhone();
         HttpSession session = request.getSession();
-        String codeSrc = (String) session.getAttribute(phone);
-        if (codeSrc.equals(user.getCode())) {
+//        String codeSrc = (String) session.getAttribute(phone);
+        String codeSrc = redisTemplate.opsForValue().get("code");
+        if (codeSrc != null && codeSrc.equals(user.getCode())) {
             LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
             userLambdaQueryWrapper.eq(User::getPhone, phone);
             User userDb = userService.getOne(userLambdaQueryWrapper);
@@ -54,7 +55,7 @@ public class UserController {
                 userService.save(user);
             }
             session.setAttribute("user", userDb == null ? user.getId().toString() : userDb.getId().toString());
-
+            redisTemplate.delete("code");
             return R.success(user);
         }
         return R.error("验证码错误，登录失败");

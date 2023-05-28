@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.zyh.spring.take_away.dto.DishDto;
 import com.zyh.spring.take_away.pojo.Dish;
 
+import java.util.List;
+
 
 public interface DishService extends IService<Dish> {
     Page<Dish> pageSelect(Page<Dish> dishPage, String name);
@@ -18,4 +20,6 @@ public interface DishService extends IService<Dish> {
     void deleteDishDto(Long id);
 
     void updateStatus(String status, Long id);
+
+    List<DishDto> getListByCategoryId(Dish dish,String ... up);
 }
