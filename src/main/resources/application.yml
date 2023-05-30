@@ -24,6 +24,10 @@ spring:
     jedis:
       pool:
         max-wait: 1ms
+  cache:
+    redis:
+#      设置缓存的过期时间
+      time-to-live: 1800000
 #        mybatis-plus配置项
 mybatis-plus:
   configuration:

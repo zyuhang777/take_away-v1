@@ -17,6 +17,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -37,6 +40,8 @@ public class SetmealController {
     private SetmealDishService  setmealDishService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private CacheManager cacheManager;
     @ApiOperation("套餐分页查询")
     @GetMapping("/page")
     public R<Page<SetmealDto>> page(@RequestParam("page") Long page,
@@ -66,12 +71,15 @@ public class SetmealController {
     }
     @ApiOperation("添加套餐")
     @PostMapping
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public R<String> saveSetmeal(@RequestBody SetmealDto setmealDto){
         setmealService.saveSetmealDto(setmealDto);
         return R.success("添加成功");
     }
     @ApiOperation("根据id删除套餐")
     @DeleteMapping
+//    allEntries表示清理setmealCache这个分类下的所有缓存数据 allEntries默认值为false；
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public R<String> delete(@Param("ids")String ids){
         setmealService.deleteByIds(ids);
         return R.success("删除套餐成功了");
@@ -103,6 +111,7 @@ public class SetmealController {
     }
     @ApiOperation("获取套餐列表")
     @GetMapping("/list")
+    @Cacheable(value = "setmealCache",key = "#categoryId +'_' + #status")
     public R<List<Setmeal>> getSetmealLis(@RequestParam("categoryId")String categoryId,
                                           @RequestParam("status")String status){
         LambdaQueryWrapper<Setmeal> wrapper = new LambdaQueryWrapper<>();
