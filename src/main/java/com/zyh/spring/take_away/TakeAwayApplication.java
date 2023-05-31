@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Slf4j
 @SpringBootApplication
-@ServletComponentScan()
+@ServletComponentScan
 @EnableTransactionManagement
 @EnableCaching//开启spring-cache缓存方式的注解功能
 public class TakeAwayApplication {

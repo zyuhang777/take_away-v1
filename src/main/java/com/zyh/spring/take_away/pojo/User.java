@@ -15,7 +15,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @TableId
+    @TableId()
     private Long id;
 
 
